@@ -100,8 +100,8 @@ def convolution(inputs,
                 variables_collections=None,
                 outputs_collections=None,
                 trainable=True,
-		quantized=False,
-		quantization_params=None,
+		        quantized=False,
+		        quantization_params=None,
                 scope=None,
                 conv_dims=None):
   """Adds an N-D convolution followed by an optional batch_norm layer.
@@ -222,8 +222,8 @@ def convolution(inputs,
         bias_regularizer=biases_regularizer,
         activity_regularizer=None,
         trainable=trainable,
-	quantized=quantized,
-	quantization_params=quantization_params,
+	    quantized=quantized,
+	    quantization_params=quantization_params,
         name=sc.name,
         dtype=inputs.dtype.base_dtype,
         _scope=sc,
@@ -337,11 +337,11 @@ def variable(name,
 
   # Remove duplicates
   collections = list(set(collections))
-  # if custom_getter is not None:
-  #   getter = functools.partial(
-  #       tf_variables._make_getter(), reuse=variable_scope.get_variable_scope().reuse)
+  if getter is not None:
+     getter = functools.partial(
+         tf_variables._make_getter(), reuse=variable_scope.get_variable_scope().reuse)
   with ops.device(device or ''):
-    return tf_variables.getter(
+    return getter(
         name,
         shape=shape,
         dtype=dtype,
@@ -355,14 +355,13 @@ def variable(name,
         synchronization=synchronization,
         aggregation=aggregation)
 
+
 def _build_variable_getter(rename=None):
   """Build a model variable getter that respects scope getter and renames."""
-
   # VariableScope will nest the getters
   def layer_variable_getter(getter, *args, **kwargs):
     kwargs['rename'] = rename
     return _model_variable_getter(getter, *args, **kwargs)
-
   return layer_variable_getter
 
 
