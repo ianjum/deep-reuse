@@ -37,6 +37,7 @@ from tensorflow.python.ops import variables as tf_variables
 from tensorflow.python.ops import variable_scope as vs
 from tensorflow.python.util import nest
 from tensorflow.python.util import tf_inspect
+import tensorflow as tf
 
 
 class Layer(object):
@@ -93,6 +94,7 @@ class Layer(object):
     self.input_spec = None
 
     # Determine layer name (non-unique).
+#    if isinstance(name, vs.VariableScope):
     if isinstance(name, vs.VariableScope):
       base_name = name.name
     else:
@@ -106,7 +108,8 @@ class Layer(object):
     # Determine variable scope.
     scope = kwargs.get('_scope')
     if scope:
-      with vs.variable_scope(scope) as captured_scope:
+#      with vs.variable_scope(scope) as captured_scope:
+       with tf.compat.v1.variable_scope(scope) as captured_scope:
         self._scope = captured_scope
     else:
       self._scope = None
@@ -319,11 +322,11 @@ class Layer(object):
     if self._scope is None:
       # If constructed with _scope=None, lazy setting of scope.
       if self._reuse:
-        with vs.variable_scope(
+        with tf.compat.v1.variable_scope(
             scope if scope is not None else self._base_name) as captured_scope:
           self._scope = captured_scope
       else:
-        with vs.variable_scope(
+        with tf.compat.v1.variable_scope(
             scope, default_name=self._base_name) as captured_scope:
           self._scope = captured_scope
 
@@ -358,7 +361,7 @@ class Layer(object):
 
     self._set_scope(None)
 
-    with vs.variable_scope(self._scope,
+    with tf.compat.v1.variable_scope(self._scope,
                            reuse=self.built or self._reuse) as scope:
       with ops.name_scope(scope.original_name_scope):
         variable = vs.get_variable(name,
@@ -413,7 +416,7 @@ class Layer(object):
     except ValueError as e:
       raise ValueError('Input graph and Layer graph are not the same: %s' % e)
 
-    with vs.variable_scope(self._scope,
+    with tf.compat.v1.variable_scope(self._scope,
                            reuse=self.built or self._reuse) as scope:
       with ops.name_scope(scope.original_name_scope):
         if not self.built:
