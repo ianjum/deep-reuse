@@ -364,7 +364,7 @@ class Layer(object):
     with tf.compat.v1.variable_scope(self._scope,
                            reuse=self.built or self._reuse) as scope:
       with ops.name_scope(scope.original_name_scope):
-        variable = vs.get_variable(name,
+        variable = tf.compat.v1.get_variable(name,
                                    shape=shape,
                                    initializer=initializer,
                                    dtype=dtypes.as_dtype(dtype),
