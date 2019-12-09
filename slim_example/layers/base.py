@@ -360,41 +360,46 @@ class Layer(object):
     existing_variables = set(tf_variables.global_variables())
 
     self._set_scope(None)
-
-    with tf.compat.v1.variable_scope(self._scope,
-                           reuse=self.built or self._reuse) as scope:
-      with ops.name_scope(scope.original_name_scope):
-        variable = tf.compat.v1.get_variable(name,
+    # tf.keras.layers.Layer()
+    # with tf.compat.v1.variable_scope(self._scope,
+    #                        reuse=self.built or self._reuse) as scope:
+    #   with ops.name_scope(scope.original_name_scope):
+    #     variable = tf.Variable(name,
+    #                                shape=shape,
+    #                                initializer=initializer,
+    #                                dtype=dtypes.as_dtype(dtype),
+    #                                trainable=trainable and self.trainable)
+    #     if variable in existing_variables:
+    #       return variable
+    #     if regularizer:
+    #       # To match the behavior of tf.get_variable(), we only
+    #       # apply regularization if the variable is newly created.
+    #       if isinstance(variable, tf_variables.PartitionedVariable):
+    #         for v in variable:
+    #           with ops.colocate_with(v.op):
+    #             with ops.name_scope(name + '/Regularizer'):
+    #               regularization = regularizer(v)
+    #           if regularization is not None:
+    #             self.add_loss(regularization)
+    #             _add_elements_to_collection(
+    #                 regularization, ops.GraphKeys.REGULARIZATION_LOSSES)
+    #       else:
+    #         with ops.colocate_with(variable.op):
+    #           with ops.name_scope(name + '/Regularizer'):
+    #             regularization = regularizer(variable)
+    #         if regularization is not None:
+    #           self.add_loss(regularization)
+    #           _add_elements_to_collection(
+    #               regularization, ops.GraphKeys.REGULARIZATION_LOSSES)
+    # if trainable:
+    #   self._trainable_weights.append(variable)
+    # else:
+    #   self._non_trainable_weights.append(variable)
+    variable = tf.keras.layers.Layer.add_variable(name,
                                    shape=shape,
                                    initializer=initializer,
                                    dtype=dtypes.as_dtype(dtype),
                                    trainable=trainable and self.trainable)
-        if variable in existing_variables:
-          return variable
-        if regularizer:
-          # To match the behavior of tf.get_variable(), we only
-          # apply regularization if the variable is newly created.
-          if isinstance(variable, tf_variables.PartitionedVariable):
-            for v in variable:
-              with ops.colocate_with(v.op):
-                with ops.name_scope(name + '/Regularizer'):
-                  regularization = regularizer(v)
-              if regularization is not None:
-                self.add_loss(regularization)
-                _add_elements_to_collection(
-                    regularization, ops.GraphKeys.REGULARIZATION_LOSSES)
-          else:
-            with ops.colocate_with(variable.op):
-              with ops.name_scope(name + '/Regularizer'):
-                regularization = regularizer(variable)
-            if regularization is not None:
-              self.add_loss(regularization)
-              _add_elements_to_collection(
-                  regularization, ops.GraphKeys.REGULARIZATION_LOSSES)
-    if trainable:
-      self._trainable_weights.append(variable)
-    else:
-      self._non_trainable_weights.append(variable)
     return variable
 
   def __call__(self, inputs, *args, **kwargs):
