@@ -395,7 +395,8 @@ class Layer(object):
     #   self._trainable_weights.append(variable)
     # else:
     #   self._non_trainable_weights.append(variable)
-    variable = tf.keras.layers.Layer.add_variable(name,
+    variable = tf.keras.layers.Layer.add_variable(self,
+                                   name,
                                    shape=shape,
                                    initializer=initializer,
                                    dtype=dtypes.as_dtype(dtype),
