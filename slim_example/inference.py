@@ -21,6 +21,7 @@ from __future__ import print_function
 import math
 import tensorflow as tf
 import tf_slim as slim
+from tensorflow.python.ops import metrics_impl as metrics
 
 from datasets import dataset_factory
 from nets import nets_factory
@@ -95,6 +96,24 @@ def aggregate_metric_map(names_to_tuples):
     metric_names = names_to_tuples.keys()
     value_ops, update_ops = zip(*names_to_tuples.values())
     return dict(zip(metric_names, value_ops)), dict(zip(metric_names, update_ops))
+
+def streaming_sparse_recall_at_k(predictions,
+                                 labels,
+                                 k,
+                                 class_id=None,
+                                 weights=None,
+                                 metrics_collections=None,
+                                 updates_collections=None,
+                                 name=None):
+  return metrics.recall_at_k(
+      k=k,
+      class_id=class_id,
+      predictions=predictions,
+      labels=labels,
+      weights=weights,
+      metrics_collections=metrics_collections,
+      updates_collections=updates_collections,
+      name=name)
 
 def main(_):
   if not FLAGS.dataset_dir:
@@ -177,8 +196,9 @@ def main(_):
     # Define the metrics:
     #names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
     names_to_values, names_to_updates = aggregate_metric_map({
-        'Accuracy': tf.compat.v1.metrics.accuracy(labels, predictions),
-        'Recall_5': slim.metrics.streaming_recall_at_k(
+        #'Accuracy': slim.metrics.streaming_accuracy(predictions,labels),
+        'Accuracy': tf.compat.v1.metrics.accuracy(labels, predictions), ##FIXXED
+        'Recall_5': (
             logits, labels, 5),
     })
 
