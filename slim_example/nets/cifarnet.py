@@ -67,7 +67,7 @@ def cifarnet(images, num_classes=10,
     device = '/gpu:0'
     with tf.device(device):
       net = slim.conv2d(images, 64, [5, 5], scope='conv1')
-#      net = ulayer.conv2d(images, 64, [5, 5], scope='conv1', quantized=True, quantization_params=quant_params[0])
+# FIXXXX     net = ulayer.conv2d(images, 64, [5, 5], scope='conv1', quantized=True, quantization_params=quant_params[0])
       end_points['conv1'] = net
       net = slim.max_pool2d(net, [2, 2], 2, scope='pool1')
       end_points['pool1'] = net

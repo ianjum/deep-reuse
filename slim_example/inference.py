@@ -91,6 +91,10 @@ tf.compat.v1.app.flags.DEFINE_integer(
 
 FLAGS = tf.compat.v1.app.flags.FLAGS
 
+def aggregate_metric_map(names_to_tuples):
+    metric_names = names_to_tuples.keys()
+    value_ops, update_ops = zip(*names_to_tuples.values())
+    return dict(zip(metric_names, value_ops)), dict(zip(metric_names, update_ops))
 
 def main(_):
   if not FLAGS.dataset_dir:
@@ -171,7 +175,8 @@ def main(_):
     labels = tf.squeeze(labels)
 
     # Define the metrics:
-    names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
+    #names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
+    names_to_values, names_to_updates = aggregate_metric_map({
         'Accuracy': slim.metrics.streaming_accuracy(predictions, labels),
         'Recall_5': slim.metrics.streaming_recall_at_k(
             logits, labels, 5),

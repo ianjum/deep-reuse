@@ -115,11 +115,6 @@ class Layer(object):
       self._scope = None
     self._current_scope = None
 
-#     if scope:
-#       self._scope = next(vs.variable_scope(scope).gen)
-#     else:
-#       self._scope = None
-
   @property
   def scope_name(self):
     if not self._scope:
@@ -399,7 +394,7 @@ class Layer(object):
                                    name,
                                    shape=shape,
                                    initializer=initializer,
-                                   dtype=dtypes.as_dtype(dtype),
+                                   dtype="float64",
                                    trainable=trainable and self.trainable)
     return variable
 
