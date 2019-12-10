@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import print_function
 
 import tensorflow as tf
+from tensorflow.python.ops import nn
 import tf_slim as slim
 import sys
 sys.path.append('layers')
@@ -66,26 +67,40 @@ def cifarnet(images, num_classes=10,
   with tf.compat.v1.variable_scope(scope, 'CifarNet', [images, num_classes]):
     device = '/gpu:0'
     with tf.device(device):
-      net = slim.conv2d(images, 64, [5, 5], scope='conv1')
-# FIXXXX     net = ulayer.conv2d(images, 64, [5, 5], scope='conv1', quantized=True, quantization_params=quant_params[0])
+      #net = slim.conv2d(images, 64, [5, 5], scope='conv1')
+      #keras.layers.Conv2D(filters, kernel_size, strides=(1, 1), padding='valid', data_format=None, dilation_rate=(1, 1), activation=None,
+      # use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None, bias_regularizer=None,
+      # activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
+      # FIXXXX     net = ulayer.conv2d(images, 64, [5, 5], scope='conv1', quantized=True, quantization_params=quant_params[0])activity_regularizer=None, kernel_constraint=None, bias_constraint=None
+
+      net = tf.keras.layers.Conv2D(images, 64, (5,5), padding='SAME',data_format=None,dilation_rate=(1, 1),activation_fn=nn.relu,
+                                   use_bias=True, kernel_initializer='glorot_uniform', bias_initializer='zeros', kernel_regularizer=None,
+                                   bias_regularizer=None,activity_regularizer=None, kernel_constraint=None, bias_constraint=None)
       end_points['conv1'] = net
+
       net = slim.max_pool2d(net, [2, 2], 2, scope='pool1')
       end_points['pool1'] = net
+
       net = tf.nn.lrn(net, 4, bias=1.0, alpha=0.001/9.0, beta=0.75, name='norm1')
       net = slim.conv2d(net, 64, [5, 5], scope='conv2')
 #     net = ulayer.conv2d(net, 64, [5, 5], scope='conv2', quantized=True, quantization_params=quant_params[1])
       end_points['conv2'] = net
+
       net = tf.nn.lrn(net, 4, bias=1.0, alpha=0.001/9.0, beta=0.75, name='norm2')
       net = slim.max_pool2d(net, [2, 2], 2, scope='pool2')
       end_points['pool2'] = net
+
       net = slim.flatten(net)
       end_points['Flatten'] = net
+
       net = slim.fully_connected(net, 384, scope='fc3')
       end_points['fc3'] = net
+
       net = slim.dropout(net, dropout_keep_prob, is_training=is_training,
                          scope='dropout3')
       net = slim.fully_connected(net, 192, scope='fc4')
       end_points['fc4'] = net
+
       logits = slim.fully_connected(net, num_classes,
                                     biases_initializer=tf.compat.v1.zeros_initializer(),
                                     weights_initializer=trunc_normal(1/192.0),

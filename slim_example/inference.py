@@ -233,7 +233,7 @@ def main(_):
         logdir=FLAGS.eval_dir,
         num_evals=num_batches,
         eval_op=list(names_to_updates.values()),
-	session_config=config,
+	    session_config=config,
         variables_to_restore=variables_to_restore)
 
 

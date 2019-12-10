@@ -81,6 +81,7 @@ DATA_FORMAT_NDHWC = 'NDHWC'
 
 # TODO(jbms): change `rate` parameter to `dilation_rate` for consistency with
 # underlying op.
+
 def convolution(inputs,
                 num_outputs,
                 kernel_size,
