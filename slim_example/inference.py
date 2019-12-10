@@ -177,7 +177,7 @@ def main(_):
     # Define the metrics:
     #names_to_values, names_to_updates = slim.metrics.aggregate_metric_map({
     names_to_values, names_to_updates = aggregate_metric_map({
-        'Accuracy': slim.metrics.streaming_accuracy(predictions, labels),
+        'Accuracy': tf.metrics.accuracy(labels,predictions),
         'Recall_5': slim.metrics.streaming_recall_at_k(
             logits, labels, 5),
     })
